@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <fcntl.h>
+
+void calculate_and_print(int i) {
+    for (int k = 0; k < 10; k++) {
+        printf("%d ", 3 * k + i);
+        fflush(stdout);
+        sleep(1);
+    }
+}
+
+int main() {
+    sem_t *sem = sem_open("/sync", O_CREAT, 0644, 1);
+
+    pid_t p1 = fork();
+    if (p1 == 0) {
+        sem_wait(sem);
+        calculate_and_print(1);
+        sem_post(sem);
+        exit(0);
+    }
+
+    pid_t p2 = fork();
+    if (p2 == 0) {
+        sem_wait(sem);
+        calculate_and_print(2);
+        sem_post(sem);
+        exit(0);
+    }
+
+    pid_t p3 = fork();
+    if (p3 == 0) {
+        sem_wait(sem);
+        calculate_and_print(3);
+        sem_post(sem);
+        exit(0);
+    }
+
+    wait(NULL);
+    wait(NULL);
+    wait(NULL);
+
+    sem_close(sem);
+    sem_unlink("/sync");
+
+    return 0;
+}

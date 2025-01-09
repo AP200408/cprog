@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+int main() {
+    int prev_reading, curr_reading, total_units;
+    double cost = 0, maintenance = 50.0, surcharge = 0, total_bill;
+
+    printf("Enter the previous meter reading: ");
+    scanf("%d", &prev_reading);
+    printf("Enter the current meter reading: ");
+    scanf("%d", &curr_reading);
+
+    total_units = curr_reading - prev_reading;
+
+    if (total_units > 300) {
+        cost += (total_units - 300) * 7.0;
+        total_units = 300;
+    }
+    if (total_units > 100) {
+        cost += (total_units - 100) * 5.0;
+        total_units = 100;
+    }
+    cost += total_units * 3.0;
+
+    if (cost > 1000.0) {
+        surcharge = cost * 0.1;
+    }
+
+    total_bill = cost + maintenance + surcharge;
+
+    printf("| Slab          | Rate     | Consumed | Cost   |\n");
+    printf("|---------------|----------|----------|--------|\n");
+    printf("| 1(<100)       | @3.00    | %8d | %6.2f |\n", (curr_reading - prev_reading > 100 ? 100 : total_units), total_units * 3.0);
+    printf("| 2(101 to 300) | @5.00    | %8d | %6.2f |\n", (curr_reading - prev_reading > 300 ? 200 : curr_reading - prev_reading - 100), (curr_reading - prev_reading > 100 ? 200 : curr_reading - prev_reading - 100) * 5.0);
+    printf("| 3(>300)       | @7.00    | %8d | %6.2f |\n", curr_reading - prev_reading - 300, (curr_reading - prev_reading - 300) * 7.0);
+    printf("| Maintenance   |          |          | %6.2f |\n", maintenance);
+    printf("| Surcharge     | @10%%     |          | %6.2f |\n", surcharge);
+    printf("| Total Bill    |          |          | %6.2f |\n", total_bill);
+
+    return 0;
+}

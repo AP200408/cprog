@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+void convertAndDisplayTemperatures() {
+    FILE *file = fopen("temperatures.txt", "r");
+    if (!file) {
+        printf("Error: Could not open file temperatures.txt\n");
+        return;
+    }
+
+    printf("| Temp (C) | Temp (F) | Status |\n");
+    printf("|----------|----------|--------|\n");
+
+    double tempC;
+    while (fscanf(file, "%lf", &tempC) == 1) {
+        double tempF = (tempC * 9.0 / 5.0) + 32.0;
+        char *status;
+
+        if (tempF < 23.0) {
+            status = "Below";
+        } else if (tempF > 50.0) {
+            status = "Above";
+        } else {
+            status = "Right";
+        }
+
+        printf("| %8.1f | %8.1f | %6s |\n", tempC, tempF, status);
+    }
+
+    fclose(file);
+}
+
+int main() {
+    convertAndDisplayTemperatures();
+    return 0;
+}

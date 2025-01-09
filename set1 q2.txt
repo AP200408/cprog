@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <unistd.h>
+
+void toUppercase(const char *inputFile, const char *outputFile) {
+    FILE *in = fopen(inputFile, "r");
+    FILE *out = fopen(outputFile, "w");
+
+    if (!in || !out) {
+        printf("Error: Could not open files.\n");
+        exit(1);
+    }
+
+    char c;
+    while ((c = fgetc(in)) != EOF) {
+        fputc(toupper(c), out);
+    }
+
+    fclose(in);
+    fclose(out);
+}
+
+void displayFile(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        printf("Error: Could not open file %s\n", filename);
+        return;
+    }
+
+    char c;
+    while ((c = fgetc(file)) != EOF) {
+        putchar(c);
+    }
+
+    fclose(file);
+}
+
+int main() {
+    pid_t child1, child2;
+
+    // Create child process 1 for converting to uppercase
+    child1 = fork();
+    if (child1 == 0) {
+        toUppercase("input.txt", "output.txt");
+        exit(0);
+    }
+
+    // Wait for the first child process
+    wait(NULL);
+
+    // Create child process 2 for displaying the file content
+    child2 = fork();
+    if (child2 == 0) {
+        displayFile("output.txt");
+        exit(0);
+    }
+
+    // Wait for the second child process
+    wait(NULL);
+
+    return 0;
+}
